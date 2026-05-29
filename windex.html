@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>BWODITOR REAL FIX</title>
+<title>BWODITOR ACTUALLY FIXED</title>
 
 <style>
 html, body {
   margin: 0;
+  padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -24,11 +25,16 @@ html, body {
 
 <body>
 
+<!-- REQUIRED DUMMY ELEMENTS -->
 <div id="title"></div>
 <div id="version-short"></div>
 <div id="memory-usage"></div>
 <div id="title-content"></div>
 <div id="main-footer"></div>
+<div id="screen-left"></div>
+<div id="screen-right"></div>
+<div id="outer"></div>
+<div id="main"></div>
 
 <canvas
   id="canvas"
@@ -39,7 +45,7 @@ html, body {
 
 <script>
 
-(async function () {
+(async () => {
 
 const BASE =
 "https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
@@ -47,33 +53,32 @@ const BASE =
 const WOLF =
 "https://unpkg.com/bwoditor-web@1.0.0/assets/public/Data.wolf";
 
+window.WoditorGameSettings = {
+  hideSideButtons: true,
+  hideHeaderFooter: true,
+  isFullscreen: true
+};
+
 window.Module = {
-
-  preRun: [],
-
   canvas: document.getElementById("canvas"),
 
   locateFile(path) {
 
-    if (path.indexOf("Data.wolf") !== -1) {
+    if (path.includes("Data.wolf")) {
       return WOLF;
     }
 
     return BASE + path;
-  }
+  },
+
+  preRun: [],
+
+  postRun: []
 };
 
-Module.preRun.push(function () {
+function loadScript(src) {
 
-  try { FS.mkdir("/data0"); } catch(e) {}
-  try { FS.mkdir("/data0/woditor-test-GameCache"); } catch(e) {}
-  try { FS.mkdir("/data0/woditor-test-GameCache/Data"); } catch(e) {}
-
-});
-
-function addScript(src) {
-
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
 
     const s = document.createElement("script");
 
@@ -86,50 +91,91 @@ function addScript(src) {
   });
 }
 
-await addScript(BASE + "settings.js");
-await addScript(BASE + "lib/jszip.min.js");
-await addScript(BASE + "lib/hammer.min.js");
+/* LOAD CORE LIBS */
+
+await loadScript(BASE + "settings.js");
+await loadScript(BASE + "lib/jszip.min.js");
+await loadScript(BASE + "lib/hammer.min.js");
+
+/* PREVENT keydispatch.js CRASH */
 
 window.Module.canvas =
   document.getElementById("canvas");
 
-await addScript(BASE + "lib/keydispatch.js");
-await addScript(BASE + "lib/system.js");
+/* LOAD EMSCRIPTEN SYSTEM */
 
-async function mountFile(name) {
+await loadScript(BASE + "lib/system.js");
 
-  const data =
-    await fetch(BASE + name)
-    .then(r => r.arrayBuffer());
+/* MOUNT GAME FILES */
 
-  FS.writeFile(
-    "/data0/woditor-test-GameCache/Data/" + name,
-    new Uint8Array(data)
-  );
+Module.preRun.push(async () => {
 
-  console.log("mounted", name);
-}
+  try { FS.mkdir("/data0"); } catch(e) {}
 
-Module.preRun.push(async function () {
+  try {
+    FS.mkdir("/data0/woditor-test-GameCache");
+  } catch(e) {}
 
-  await mountFile("Game.ini");
-  await mountFile("FontList.ini");
-  await mountFile("DefaultFont.ttf");
-  await mountFile("DefaultSubFont.ttf");
-  await mountFile("DefaultSoundFont.sf2");
-  await mountFile("InitialDownloadList.ini");
-});
+  try {
+    FS.mkdir("/data0/woditor-test-GameCache/Data");
+  } catch(e) {}
 
-await addScript(BASE + "woditor.js");
+  async function mount(name) {
 
-document.body.addEventListener("click", function () {
+    const data =
+      await fetch(BASE + name)
+      .then(r => r.arrayBuffer());
 
-  if (window.AL && AL.currentCtx && AL.currentCtx.audioCtx) {
+    FS.writeFile(
+      "/data0/woditor-test-GameCache/Data/" + name,
+      new Uint8Array(data)
+    );
 
-    AL.currentCtx.audioCtx.resume();
+    console.log("mounted", name);
   }
 
-}, { once: true });
+  await mount("Game.ini");
+  await mount("FontList.ini");
+  await mount("DefaultFont.ttf");
+  await mount("DefaultSubFont.ttf");
+  await mount("DefaultSoundFont.sf2");
+  await mount("InitialDownloadList.ini");
+
+});
+
+/* DISABLE BROKEN MOBILE INPUTS */
+
+window.dispatchKeyCode = function(){};
+window.dispatchDirKeyWithDelta = function(){};
+window.cancelAllDirKeyCodes = function(){};
+
+/* LOAD GAME */
+
+await loadScript(BASE + "woditor.js");
+
+/* AUDIO FIX */
+
+document.body.addEventListener(
+  "click",
+  async () => {
+
+    try {
+
+      if (
+        window.AL &&
+        AL.currentCtx &&
+        AL.currentCtx.audioCtx
+      ) {
+        await AL.currentCtx.audioCtx.resume();
+      }
+
+    } catch(e) {
+      console.log(e);
+    }
+
+  },
+  { once: true }
+);
 
 })();
 
