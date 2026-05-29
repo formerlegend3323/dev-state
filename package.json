@@ -1,0 +1,12 @@
+```json id="zjlwmn"
+{
+  "name": "bwoditor-web",
+  "version": "1.0.0",
+  "description": "Browser Woditor Web Build",
+  "main": "assets/public/index.html",
+  "files": [
+    "assets/public/**/*"
+  ],
+  "license": "MIT"
+}
+```
