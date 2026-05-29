@@ -2,17 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>BWODITOR REAL REAL FIX</title>
-
-<style>
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: black;
-}
-</style>
+<title>BWODITOR FINAL FINAL</title>
 </head>
 
 <body>
@@ -26,34 +16,22 @@ const BASE =
 const WOLF =
 "https://unpkg.com/bwoditor-web@1.0.0/assets/public/Data.wolf";
 
-/*
-  FETCH ORIGINAL PAGE
-*/
 let html =
   await fetch(BASE + "index.html")
   .then(r => r.text());
 
-/*
-  FORCE STANDARDS MODE
-*/
 html = html.replace(
   /<!doctype html>/i,
   "<!DOCTYPE html>"
 );
 
-/*
-  ADD BASE TAG
-*/
 html = html.replace(
   /<head>/i,
   `<head>
-   <base href="${BASE}">
+  <base href="${BASE}">
   `
 );
 
-/*
-  PATCH ONLY Data.wolf
-*/
 html = html.replace(
   /<script async type="text\/javascript" src="woditor\.js"><\/script>/i,
 
@@ -71,15 +49,49 @@ Module.locateFile = function(path) {
   return "${BASE}" + path;
 };
 
+Module.preRun = Module.preRun || [];
+
+Module.preRun.push(async function() {
+
+  try { FS.mkdir("/data0"); } catch(e) {}
+
+  try {
+    FS.mkdir("/data0/woditor-test-GameCache");
+  } catch(e) {}
+
+  try {
+    FS.mkdir("/data0/woditor-test-GameCache/Data");
+  } catch(e) {}
+
+  async function mount(name) {
+
+    const data =
+      await fetch("${BASE}" + name)
+      .then(r => r.arrayBuffer());
+
+    FS.writeFile(
+      "/data0/woditor-test-GameCache/Data/" + name,
+      new Uint8Array(data)
+    );
+
+    console.log("mounted", name);
+  }
+
+  await mount("Game.ini");
+  await mount("FontList.ini");
+  await mount("DefaultFont.ttf");
+  await mount("DefaultSubFont.ttf");
+  await mount("DefaultSoundFont.sf2");
+  await mount("InitialDownloadList.ini");
+
+});
+
 </script>
 
 <script async type="text/javascript" src="${BASE}woditor.js"></script>
 `
 );
 
-/*
-  REPLACE PAGE
-*/
 document.open();
 document.write(html);
 document.close();
