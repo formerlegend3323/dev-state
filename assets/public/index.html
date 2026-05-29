@@ -16,63 +16,48 @@
       width: 100vw;
       height: 100dvh;
       margin: 0;
-      padding: 0;
       overflow: hidden;
       user-select: none;
-    }
-
-    #outer, #container {
-      width: 100vw;
-      height: 100dvh;
-      overflow: hidden;
-      display: grid;
     }
 
     #canvas {
       width: 100%;
       height: 100%;
       background: #333;
-      outline: none;
     }
   </style>
 </head>
 
 <body>
 
-  <audio id="sound" src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/sample.wav" hidden></audio>
+  <!-- AUDIO (CDN FIXED PATH) -->
+  <audio id="sound"
+    src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/assets/sample.wav"
+    hidden>
+  </audio>
 
-  <div id="outer">
-    <div id="container">
-
-      <div id="screen-holder-main">
-        <canvas id="canvas" width="640" height="480" data-webgl2="true"></canvas>
-
-        <button id="settings"></button>
-
-        <input id="textinput" type="text" hidden />
-      </div>
-
-    </div>
-  </div>
+  <canvas id="canvas" width="640" height="480"></canvas>
 
   <!-- ===================== -->
-  <!-- CDN ONLY SCRIPT LOADS -->
+  <!-- SCRIPTS (FIXED PATHS) -->
   <!-- ===================== -->
 
   <script>
-    const CDN = "https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/";
+    const CDN = "https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
   </script>
 
+  <!-- external libs (safe CDN versions) -->
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/lib/keydispatch.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/lib/system.js"></script>
+  <!-- YOUR GAME SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/lib/keydispatch.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/lib/system.js"></script>
 
   <script type="module"
-    src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/lib/benten_front.js"></script>
+    src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/lib/benten_front.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/woditor.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/woditor.js"></script>
 
 </body>
 </html>
