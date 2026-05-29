@@ -1,12 +1,11 @@
-```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>BWODITOR CLEAN</title>
+<title>BWODITOR WORKING</title>
 
 <style>
-html, body, canvas {
+html, body {
   margin: 0;
   width: 100%;
   height: 100%;
@@ -14,111 +13,157 @@ html, body, canvas {
   background: black;
 }
 
-canvas {
-  display: block;
+iframe {
+  border: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#startOverlay {
+  position: fixed;
+  inset: 0;
+  background: black;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  font-size: 24px;
+  z-index: 9999;
+  cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="canvas"></canvas>
+<div id="startOverlay">
+  CLICK TO START
+</div>
 
-<script>
+<iframe id="game"></iframe>
+
+<script type="module">
 
 const BASE =
 "https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
 
-const DATA_WOLF =
+const WOLF =
 "https://unpkg.com/bwoditor-web@1.0.0/assets/public/Data.wolf";
 
+const overlay = document.getElementById("startOverlay");
 
+overlay.onclick = async () => {
 
-/*
-CREATE EMSCRIPTEN MODULE
-*/
+  overlay.remove();
 
-window.Module = {
+  let html = await fetch(BASE + "index.html")
+    .then(r => r.text());
 
-  canvas: document.getElementById("canvas"),
+  /*
+    Ensure standards mode
+  */
+  if (!html.toLowerCase().includes("<!doctype")) {
+    html = "<!DOCTYPE html>\n" + html;
+  }
 
-  locateFile(path) {
+  /*
+    Force proper base URL
+  */
+  html = html.replace(
+    /<head>/i,
+    `<head>
+      <base href="${BASE}">
+      <meta charset="utf-8">
+    `
+  );
 
-    console.log("request:", path);
+  /*
+    Replace woditor.js loader
+  */
+  html = html.replace(
+    /<script async type="text\/javascript" src="woditor\.js"><\/script>/i,
 
-    if (path.endsWith("Data.wolf")) {
-      return DATA_WOLF;
-    }
+`
+<script>
 
-    return BASE + path;
-  },
+window.Module = window.Module || {};
 
-  preRun: [async function() {
+Module.locateFile = function(path) {
 
-    /*
-    CREATE GAME FOLDERS
-    */
+  if (path.includes("Data.wolf")) {
+    return "${WOLF}";
+  }
 
-    try { FS.mkdir("/data0"); } catch(e) {}
-    try { FS.mkdir("/data0/woditor-test-GameCache"); } catch(e) {}
-    try { FS.mkdir("/data0/woditor-test-GameCache/Data"); } catch(e) {}
+  return "${BASE}" + path;
+};
 
+Module.preRun = Module.preRun || [];
 
+Module.preRun.push(function() {
 
-    /*
-    DOWNLOAD REQUIRED FILES
-    */
+  console.log("PRE-RUN START");
 
-    async function mount(name) {
+  /*
+    Create directories safely
+  */
+  FS.createPath("/", "data0", true, true);
+  FS.createPath("/data0", "woditor-test-GameCache", true, true);
+  FS.createPath(
+    "/data0/woditor-test-GameCache",
+    "Data",
+    true,
+    true
+  );
 
-      const url = BASE + name;
+});
 
-      console.log("downloading", url);
+Module.onRuntimeInitialized = async function() {
 
-      const data = await fetch(url)
-        .then(r => r.arrayBuffer());
+  console.log("RUNTIME READY");
 
-      FS.writeFile(
-        "/data0/woditor-test-GameCache/Data/" + name,
-        new Uint8Array(data)
-      );
+  async function mount(name) {
 
-      console.log("mounted", name);
-    }
-
-    await mount("Game.ini");
-    await mount("FontList.ini");
-    await mount("DefaultFont.ttf");
-    await mount("DefaultSubFont.ttf");
-    await mount("DefaultSoundFont.sf2");
-    await mount("InitialDownloadList.ini");
-
-
-
-    /*
-    MANUALLY DOWNLOAD DATA.WOLF
-    */
-
-    console.log("downloading Data.wolf");
-
-    const wolfData = await fetch(DATA_WOLF)
+    const data = await fetch("${BASE}" + name)
       .then(r => r.arrayBuffer());
 
+    const path =
+      "/data0/woditor-test-GameCache/Data/" + name;
+
     FS.writeFile(
-      "/data0/woditor-test-GameCache/Data/Data.wolf",
-      new Uint8Array(wolfData)
+      path,
+      new Uint8Array(data)
     );
 
-    console.log("mounted Data.wolf");
+    console.log("mounted", name);
+  }
 
-  }]
+  await mount("Game.ini");
+  await mount("FontList.ini");
+  await mount("DefaultFont.ttf");
+  await mount("DefaultSubFont.ttf");
+  await mount("DefaultSoundFont.sf2");
+  await mount("InitialDownloadList.ini");
+
+  console.log("ALL FILES MOUNTED");
+};
+
+<\/script>
+
+<script async type="text/javascript" src="${BASE}woditor.js"><\/script>
+`
+  );
+
+  /*
+    Load into iframe instead of document.write
+  */
+  const iframe = document.getElementById("game");
+
+  iframe.srcdoc = html;
 
 };
 
 </script>
 
-<script src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/woditor.js"></script>
-
 </body>
 </html>
-```
