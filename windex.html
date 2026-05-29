@@ -9,24 +9,23 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
 
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="mobile-web-app-status-bar-style" content="black-translucent"/>
-
-<title>Browser Woditor</title>
+<title>BWODITOR</title>
 
 <style>
 
+html,
 body {
-  width: 100vw;
-  height: 100vh;
   margin: 0;
-  padding: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
+  background: black;
 }
 
 #canvas {
   width: 100%;
   height: 100%;
+  display: block;
   background: #333;
 }
 
@@ -35,36 +34,27 @@ body {
 
 <body>
 
-<div id="outer">
-
-<div id="container">
-
-<div id="screen-holder-left">
-<div id="screen-left">
-
-<div id="left-content">
-<div id="right-hold"></div>
-<div id="move-axis"></div>
-</div>
-
-</div>
-</div>
-
-<div id="screen-holder-main">
-
-<div id="main">
-
-<div id="screen">
-
-<div id="main-header">
-<div id="title-content">
 <p id="title"></p>
-</div>
-</div>
 
-<div id="main-content">
+<div id="memory-usage"></div>
 
-<button id="settings"></button>
+<div id="screen-left"></div>
+<div id="screen-right"></div>
+
+<div id="settings"></div>
+
+<div id="move-axis"></div>
+<div id="right-hold"></div>
+
+<div id="shift"></div>
+<div id="esc"></div>
+<div id="enter"></div>
+
+<div id="version-short"></div>
+
+<input id="textinput" hidden>
+
+<p id="touchtostart"></p>
 
 <canvas
 id="canvas"
@@ -73,58 +63,10 @@ height="480"
 tabindex="-1">
 </canvas>
 
-<input
-id="textinput"
-type="text"
-hidden>
-
-<p id="touchtostart"></p>
-
-</div>
-
-<div id="main-footer">
-
-<div id="main-footer-links">
-
-<div id="version-short">
-[BW ver dummy]
-</div>
-
-<div id="memory-usage">
-已用运存:0MB
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div id="screen-holder-right">
-
-<div id="screen-right">
-
-<div class="right-content">
-
-<div id="shift"></div>
-<div id="esc"></div>
-<div id="enter"></div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 <script>
+
+const BASE =
+"https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
 
 const WOLF =
 "https://unpkg.com/bwoditor-web@1.0.0/assets/public/Data.wolf";
@@ -135,11 +77,11 @@ canvas: document.getElementById("canvas"),
 
 locateFile(path) {
 
-  if (path.endsWith("Data.wolf")) {
+  if (path.includes("Data.wolf")) {
     return WOLF;
   }
 
-  return path;
+  return BASE + path;
 }
 
 };
@@ -158,14 +100,14 @@ document.body.addEventListener("click", async () => {
 
 </script>
 
-<script type="text/javascript" src="settings.js"></script>
-<script type="text/javascript" src="lib/jszip.min.js"></script>
-<script type="text/javascript" src="lib/hammer.min.js"></script>
-<script type="text/javascript" src="lib/keydispatch.js"></script>
+<script src="settings.js"></script>
+<script src="lib/jszip.min.js"></script>
+<script src="lib/hammer.min.js"></script>
+<script src="lib/keydispatch.js"></script>
 
 <script type="module" src="lib/benten_front.js"></script>
-<script type="text/javascript" src="lib/system.js"></script>
-<script async type="text/javascript" src="woditor.js"></script>
+<script src="lib/system.js"></script>
+<script async src="woditor.js"></script>
 
 </body>
 </html>
