@@ -1,22 +1,24 @@
+```html
 <!doctype html>
 <html lang="ja-JP">
 
 <head>
   <meta charset="utf-8">
+  <base href="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/">
   <meta name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="mobile-web-app-status-bar-style" content="black-translucent"/>
   <title>Browser Woditor</title>
-  <!-- ↑的临时标题在读取时会被自动替换成settings.js中的projectName-->
+
   <style>
 
     body {
       width: 100vw;
       height: 100vh;
-      height: 100dvh; /* 适用于iOS */
-      margin: 0 0 0 0;
-      padding: 0 0 0 0;
+      height: 100dvh;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
 
       -webkit-touch-callout: none;
@@ -30,6 +32,7 @@
     a {
       color: #fff;
     }
+
     a:visited {
       color: #ddd;
     }
@@ -49,8 +52,8 @@
     }
 
     #screen-holder-main{
-      margin: 0 0 0 0;
-      padding: 0 0 0 0;
+      margin: 0;
+      padding: 0;
     }
 
     #main{
@@ -152,7 +155,7 @@
       align-items: center;
       text-align: center;
       font-size: 2.5vh;
-      background-color: whitesmoke; /*下方用javascript进行了覆写（以实现长按时显示）*/
+      background-color: whitesmoke;
       cursor: pointer;
     }
 
@@ -204,7 +207,6 @@
       font-size: 3dvmin;
     }
 
-    /* popup */
     #popup {
       height: auto;
       padding: 1vw;
@@ -231,11 +233,9 @@
       bottom: 0;
       background-color: rgba(0, 0, 0, 0.5);
       z-index: 1000;
-      /* 默认隐藏 */
       display: none;
     }
 
-    /* 当 hidden=false 时，才显示为 flex */
     #instructions:not([hidden]) {
       display: flex;
       justify-content: center;
@@ -248,17 +248,18 @@
       border-radius: 5px;
       width: 80%;
       max-width: 600px;
-      max-height: 80vh; /* 新增：限制最大高度为视口的80% */
+      max-height: 80vh;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
       position: relative;
-      display: flex; /* 新增：启用flex布局 */
-      flex-direction: column; /* 新增：垂直排列子元素 */
-      overflow-y: auto; /* 新增：内容超出时显示滚动条 */
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
     }
 
     .close-button {
       position: absolute;
-      top: 10px; right: 15px;
+      top: 10px;
+      right: 15px;
       font-size: 24px;
       cursor: pointer;
     }
@@ -326,9 +327,6 @@
 
       -webkit-touch-callout: none;
       -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
       user-select: none;
     }
 
@@ -337,84 +335,66 @@
     }
 
     #outer {
-        height: 100vh;
-        height: 100dvh;
-        overflow: hidden;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
     }
 
     #container {
-        display: grid;
-        height: 100vh;
-        height: 100dvh;
-        width: 100vw;
-        width: 100dvw;
-        overflow: hidden;
+      display: grid;
+      height: 100vh;
+      height: 100dvh;
+      width: 100vw;
+      width: 100dvw;
+      overflow: hidden;
+      grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
+      grid-template-rows: 1fr 0.01fr;
     }
 
-    #screen-holder-left, #screen-holder-main, #screen-holder-right {
-        flex: 1;
-        overflow: hidden;
-        margin: 2px;
-    }
-
-    #container {
-        grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
-        grid-template-rows: 1fr 0.01fr;
+    #screen-holder-left,
+    #screen-holder-main,
+    #screen-holder-right {
+      flex: 1;
+      overflow: hidden;
+      margin: 2px;
     }
 
     #canvas {
-      width: auto; 
-      height: 100vh; 
+      width: auto;
+      height: 100vh;
       height: 100dvh;
     }
 
     @media (max-aspect-ratio: 3.5/4) {
-        #container {
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto 1fr 0.05fr;
-        }
-        #screen-holder-left {
-            order: 2;
-        }
-        #screen-holder-main {
-            order: 1;
-            grid-column: 1 / span 2;
-        }
-        #screen-holder-right {
-            order: 3;
-        }
-        #canvas {
-          width: 100vw;
-          width: 100dvw;
-          height: auto;
-        }
-    }
-    @media (min-aspect-ratio: 3.5/4) {
-        #container {
-            grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
-            grid-template-rows: 1fr 0.01fr;
-        }
-        #screen-holder-left {
-            order: 1;
-        }
-        #screen-holder-main {
-            order: 2;
-            max-height: 100%;
-        }
-        #screen-holder-right {
-            order: 3;
-        }
-        #canvas {
-          width: auto; 
-          height: 100vh; 
-          height: 100dvh;
-        }
+      #container {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto 1fr 0.05fr;
+      }
+
+      #screen-holder-left {
+        order: 2;
+      }
+
+      #screen-holder-main {
+        order: 1;
+        grid-column: 1 / span 2;
+      }
+
+      #screen-holder-right {
+        order: 3;
+      }
+
+      #canvas {
+        width: 100vw;
+        width: 100dvw;
+        height: auto;
+      }
     }
 
     #touchtostart{
-      position:absolute; 
-      left: 0; 
-      top: 80%; 
+      position:absolute;
+      left: 0;
+      top: 80%;
       width: 100%;
       color: white;
       font-size: 3vmin;
@@ -430,150 +410,199 @@
 </head>
 
 <body>
-  <audio id="sound" src="assets/sample.wav" preload="auto" hidden></audio> <!--用于iOS调整 -->
+
+  <audio id="sound" src="assets/sample.wav" preload="auto" hidden></audio>
+
   <div id="toast"></div>
+
   <div id="outer">
+
     <div id="container">
+
       <div id="screen-holder-left">
         <div class="screen-side" id="screen-left">
-          <div class="side-header" id="left-header">
-          </div>
+
           <div class="side-content" id="left-content">
-            <div id="right-hold" class="itemh" style="width: 100%; height: 30%;"></div> <!--systems.js中的特殊设置(right-hold) -->
-            <span id="move-axis" class="itemh" style="width: 100%; height: 70%;"></span> <!--keydispatch.js里的特殊设置 -->
+            <div id="right-hold" class="itemh" style="width: 100%; height: 30%;"></div>
+            <span id="move-axis" class="itemh" style="width: 100%; height: 70%;"></span>
           </div>
-          <div class="side-footer" id="lefft-footer">
-          </div>
+
         </div>
       </div>
 
       <div id="screen-holder-main">
+
         <div id="main">
+
           <div class="padding"></div>
+
           <div id="screen">
+
             <div id="main-header">
               <div id="title-content">
                 <p id="title"></p>
               </div>
             </div>
+
             <div id="main-content">
+
               <div id="popup" hidden>
+
                 <div>
-                  <span><input class="sub-button" type="button" onclick="showInstructions()" ontouchstart="showInstructions()" value="说明书"/></span>
-<!--                  <span><input class="sub-button" type="button" onclick="openLink('LICENSE.zip')" ontouchstart="openLink('LICENSE.zip')" value="许可证(.zip)"/></span>-->
+                  <span>
+                    <input class="sub-button" type="button"
+                      onclick="showInstructions()"
+                      value="说明书"/>
+                  </span>
                 </div>
-                <div style="margin-top: 5px;">
-                  <span><input class="sub-button" type="button" id="fullscreen" value="全屏/退出"/></span>
-                  <span><input class="sub-button" type="button" onclick="dispatchClick(119)" ontouchstart="dispatchClick(119)" value="F8"/></span>
-                </div>
-                <div>
-                  <span><input class="sub-button" type="button" id="no-system-touch" value="鼠标操作" onclick="toggleNoSystemTouch()" ontouchstart="toggleNoSystemTouch()"/></span>
-                  <span><input class="sub-button" type="button" id="switch-ui" value="切换UI" onclick="toggleSwitchUI()" ontouchstart="toggleSwitchUI()"/></span>
-                </div>
-                <div>
-                  <span><input class="sub-button" type="button" id="downloadsavedir" onclick="downloadSaveDir()" ontouchstart="downloadSaveDir()" value="下载Save文件夹"/></span>
-                </div>
-                <hr/>
-                <div>
-                  <a>↓加载至Save文件夹</a>
-                  <input type="file" id="savefiles"  onchange="uploadSaveDir()" multiple />
-                  <a id="savedownload" download="Save.zip" hidden>Download</a>
-                </div>
-                <div>
-                  <p class="footer-text" hidden>↓加载临时存档（重新加载时消失）</p>
-                  <input class="sub-button" type="file" onchange="uploadSaveData()" id="savedata" name="savedata" hidden/>
-                </div>
-                <hr/>
-                <p id="bwoditorerror">无报错</p>
+
               </div>
+
               <button id="settings" oncontextmenu="event.preventDefault()"></button>
-              <canvas id="canvas" width="640px" height="480px" data-webgl2="true" oncontextmenu="event.preventDefault()"
+
+              <canvas id="canvas"
+                width="640"
+                height="480"
+                data-webgl2="true"
+                oncontextmenu="event.preventDefault()"
                 tabindex="-1"></canvas>
-              <input id="textinput" type="text" inputmode="text"
-                style="position:absolute; left: 0px; top: 0px; background: transparent; border: none; outline-width: 0; color: white; font-size: 100%;"
-                tabindex="1" hidden=true ontouchstart="document.getElementById('textinput').focus()"></input>
-              <p id="touchtostart"><!-- 启动时被自动替换成lib/system.js中的clickToStartText --></p>
+
+              <input id="textinput"
+                type="text"
+                inputmode="text"
+                style="position:absolute; left:0; top:0; background:transparent; border:none; outline-width:0; color:white; font-size:100%;"
+                tabindex="1"
+                hidden=true>
+
+              <p id="touchtostart"></p>
+
             </div>
+
             <div id="main-footer">
               <div id="main-footer-links">
                 <div id="version-short" style="margin-right: 5px;">[BW ver dummy]</div>
                 <div id="memory-usage" style="margin-left: 5px;">已用运存:0MB</div>
               </div>
-              <div id="main-footer-additional" hidden>
-                <p id="readme" class="footer-text" hidden>ReadMe</p>
-                <p id="error-log"></p>
-              </div>
             </div>
+
           </div>
+
           <div class="padding"></div>
+
         </div>
+
       </div>
 
       <div id="screen-holder-right">
+
         <div class="screen-side" id="screen-right">
-          <div class="side-header" id="right-header"></div>
+
           <div class="side-content right-content">
             <div id="shift" class="itemh" style="width: 100%; height: 30%;"></div>
             <div id="esc" class="itemh" style="width: 100%; height: 30%;"></div>
             <div id="enter" class="itemh" style="width: 100%; height: 40%;"></div>
           </div>
-          <div class="side-footer" id="right-footer">
-          </div>
+
         </div>
+
       </div>
+
     </div>
 
     <div id="instructions" hidden>
+
       <div class="instructions-content">
-<!--        <span class="close-button" onclick="closeInstructions()" ontouchstart=="closeInstructions()">&times;</span>-->
+
         <button class="close-button"
-                onclick="closeInstructions()"
-                ontouchstart="closeInstructions()">
+                onclick="closeInstructions()">
           &times;
         </button>
+
         <h3>说明书</h3>
-        <iframe src="readme.html" style="width:100%; height:300px; border:none;"></iframe>
+
+        <iframe src="readme.html"
+          style="width:100%; height:300px; border:none;"></iframe>
+
       </div>
+
     </div>
+
+  </div>
 
   <script type="text/javascript" src="settings.js"></script>
   <script type="text/javascript" src="lib/jszip.min.js"></script>
   <script type="text/javascript" src="lib/hammer.min.js"></script>
   <script type="text/javascript" src="lib/keydispatch.js"></script>
-  <script type="text/javascript">
+
+  <script>
+
     function adjustGameUI(){
-      const isPortrait = window.matchMedia('(max-aspect-ratio: 3.5/4)').matches;
+
+      const isPortrait =
+        window.matchMedia('(max-aspect-ratio: 3.5/4)').matches;
 
       const outer = document.getElementById("outer");
       const outerSize = outer.getBoundingClientRect();
+
       const offsetX = outerSize.left;
       const offsetY = outerSize.top;
+
       const wholeWidth = window.innerWidth - offsetX;
       const wholeHeight = window.innerHeight - offsetY;
-      const canvas = document.getElementById("canvas");
-      const aspectRatio = canvas.width / canvas.height;
-      const noSideButtons = WoditorGameSettings.hideSideButtons || WoditorGameSettings.isFullscreen;
-      const noHeaderFooter = WoditorGameSettings.hideHeaderFooter || WoditorGameSettings.isFullscreen;
-      const minButtonWidth = (noSideButtons || isPortrait) ? 0 : 200;
-      const canvasRate =  noHeaderFooter ? 1.0 : 0.9;
-      const idealHeight = wholeHeight * canvasRate;
-      const idealWidth = idealHeight * aspectRatio + minButtonWidth;
-      const actualCanvasWidth = wholeWidth > idealWidth ? idealHeight * aspectRatio : wholeWidth - minButtonWidth; 
-      const actualCanvasHeight = actualCanvasWidth / aspectRatio;
 
-      document.getElementById("screen-left").hidden = noSideButtons;
-      document.getElementById("screen-right").hidden = noSideButtons;
-      document.getElementById("title-content").hidden = noHeaderFooter;
-      document.getElementById("main-footer").hidden = noHeaderFooter;
+      const canvas = document.getElementById("canvas");
+
+      const aspectRatio = canvas.width / canvas.height;
+
+      const noSideButtons =
+        WoditorGameSettings.hideSideButtons ||
+        WoditorGameSettings.isFullscreen;
+
+      const noHeaderFooter =
+        WoditorGameSettings.hideHeaderFooter ||
+        WoditorGameSettings.isFullscreen;
+
+      const minButtonWidth =
+        (noSideButtons || isPortrait) ? 0 : 200;
+
+      const canvasRate = noHeaderFooter ? 1.0 : 0.9;
+
+      const idealHeight = wholeHeight * canvasRate;
+
+      const idealWidth =
+        idealHeight * aspectRatio + minButtonWidth;
+
+      const actualCanvasWidth =
+        wholeWidth > idealWidth
+          ? idealHeight * aspectRatio
+          : wholeWidth - minButtonWidth;
+
+      const actualCanvasHeight =
+        actualCanvasWidth / aspectRatio;
+
+      document.getElementById("screen-left").hidden =
+        noSideButtons;
+
+      document.getElementById("screen-right").hidden =
+        noSideButtons;
+
+      document.getElementById("title-content").hidden =
+        noHeaderFooter;
+
+      document.getElementById("main-footer").hidden =
+        noHeaderFooter;
 
       outer.style.width = wholeWidth + "px";
       outer.style.height = wholeHeight + "px";
+
       canvas.style.width = actualCanvasWidth + "px";
       canvas.style.height = actualCanvasHeight + "px";
 
       const main = document.getElementById("main");
-      main.style.top = (wholeHeight - actualCanvasHeight) / 2 + "px";
-    };
+
+      main.style.top =
+        (wholeHeight - actualCanvasHeight) / 2 + "px";
+    }
 
     function showInstructions() {
       document.getElementById('instructions').hidden = false;
@@ -582,10 +611,13 @@
     function closeInstructions() {
       document.getElementById('instructions').hidden = true;
     }
+
   </script>
+
   <script type="module" src="lib/benten_front.js"></script>
   <script type="text/javascript" src="lib/system.js"></script>
   <script async type="text/javascript" src="woditor.js"></script>
-</body>
 
+</body>
 </html>
+```
