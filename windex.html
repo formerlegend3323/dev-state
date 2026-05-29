@@ -1,9 +1,9 @@
-```html
+```html id="kg8q1n"
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>BWODITOR FINAL</title>
+<title>BWODITOR ACTUAL FIX</title>
 
 <style>
 html, body {
@@ -25,12 +25,15 @@ html, body {
 const BASE =
 "https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
 
-let html = await fetch(BASE + "index.html")
-  .then(r => r.text());
+let html =
+  await fetch(BASE + "index.html")
+    .then(r => r.text());
 
 html = html.replace(
   /<head>/i,
-  `<head><base href="${BASE}">`
+  `<head>
+  <base href="${BASE}">
+  `
 );
 
 html = html.replace(
@@ -46,25 +49,35 @@ Module.locateFile = function(path) {
 
 Module.preRun = Module.preRun || [];
 
-Module.preRun.push(function() {
+Module.preRun.push(async function() {
 
-  try {
+  try { FS.mkdir('/data0'); } catch(e) {}
+  try { FS.mkdir('/data0/woditor-test-GameCache'); } catch(e) {}
+  try { FS.mkdir('/data0/woditor-test-GameCache/Data'); } catch(e) {}
 
-    FS.mkdir('/data0');
+  async function putFile(name) {
 
-  } catch(e) {}
+    const url = "${BASE}" + name;
 
-  try {
+    const data =
+      await fetch(url)
+      .then(r => r.arrayBuffer());
 
-    FS.mkdir('/data0/woditor-test-GameCache');
+    FS.writeFile(
+      "/data0/woditor-test-GameCache/Data/" + name,
+      new Uint8Array(data)
+    );
 
-  } catch(e) {}
+    console.log("mounted", name);
 
-  try {
+  }
 
-    FS.mkdir('/data0/woditor-test-GameCache/Data');
-
-  } catch(e) {}
+  await putFile("Game.ini");
+  await putFile("FontList.ini");
+  await putFile("DefaultFont.ttf");
+  await putFile("DefaultSubFont.ttf");
+  await putFile("DefaultSoundFont.sf2");
+  await putFile("InitialDownloadList.ini");
 
 });
 
