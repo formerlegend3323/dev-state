@@ -1,14 +1,13 @@
 ```html
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>BWODITOR LOADER</title>
+<title>BWODITOR FINAL</title>
 
 <style>
 html, body {
   margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -23,37 +22,61 @@ html, body {
 
 (async () => {
 
-  const url =
-    "https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/index.html";
+const BASE =
+"https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
+
+let html = await fetch(BASE + "index.html")
+  .then(r => r.text());
+
+html = html.replace(
+  /<head>/i,
+  `<head><base href="${BASE}">`
+);
+
+html = html.replace(
+  /<script async type="text\/javascript" src="woditor\.js"><\/script>/,
+  `
+<script>
+
+window.Module = window.Module || {};
+
+Module.locateFile = function(path) {
+  return "${BASE}" + path;
+};
+
+Module.preRun = Module.preRun || [];
+
+Module.preRun.push(function() {
 
   try {
 
-    const res = await fetch(url);
+    FS.mkdir('/data0');
 
-    let html = await res.text();
+  } catch(e) {}
 
-    // force absolute base
-    html = html.replace(
-      /<head>/i,
-      `<head>
-      <base href="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/">`
-    );
+  try {
 
-    // wipe current page
-    document.open();
-    document.write(html);
-    document.close();
+    FS.mkdir('/data0/woditor-test-GameCache');
 
-  } catch (e) {
+  } catch(e) {}
 
-    document.body.innerHTML =
-      "<pre style='color:white'>" +
-      e.stack +
-      "</pre>";
+  try {
 
-    console.error(e);
+    FS.mkdir('/data0/woditor-test-GameCache/Data');
 
-  }
+  } catch(e) {}
+
+});
+
+</script>
+
+<script async src="${BASE}woditor.js"></script>
+`
+);
+
+document.open();
+document.write(html);
+document.close();
 
 })();
 
