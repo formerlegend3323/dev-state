@@ -76,32 +76,60 @@ tabindex="-1">
 
 <script>
 
-const BASE =
-"https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
-
 const WOLF =
 "https://unpkg.com/bwoditor-web@1.0.0/assets/public/Data.wolf";
+
+const originalFetch = window.fetch;
+
+window.fetch = function(resource, init) {
+
+  let url =
+    typeof resource === "string"
+      ? resource
+      : resource.url;
+
+  if (url.includes("Data.wolf")) {
+
+    console.log("redirecting Data.wolf fetch");
+
+    return originalFetch(WOLF, init);
+  }
+
+  return originalFetch(resource, init);
+};
+
+const originalOpen = XMLHttpRequest.prototype.open;
+
+XMLHttpRequest.prototype.open = function(method, url) {
+
+  if (
+    typeof url === "string" &&
+    url.includes("Data.wolf")
+  ) {
+
+    console.log("redirecting Data.wolf xhr");
+
+    arguments[1] = WOLF;
+  }
+
+  return originalOpen.apply(this, arguments);
+};
 
 window.Module = {
 
 canvas: document.getElementById("canvas"),
 
-locateFile(path) {
-
-  if (path.includes("Data.wolf")) {
-    return WOLF;
-  }
-
-  return BASE + path;
-},
-
 preRun: [function() {
 
   try { FS.mkdir("/data0"); } catch(e) {}
 
-  try { FS.mkdir("/data0/woditor-test-GameCache"); } catch(e) {}
+  try {
+    FS.mkdir("/data0/woditor-test-GameCache");
+  } catch(e) {}
 
-  try { FS.mkdir("/data0/woditor-test-GameCache/Data"); } catch(e) {}
+  try {
+    FS.mkdir("/data0/woditor-test-GameCache/Data");
+  } catch(e) {}
 
 }]
 
@@ -115,7 +143,8 @@ document.body.addEventListener("click", async () => {
 
     await ctx.resume();
 
-    const audio = document.getElementById("sound");
+    const audio =
+      document.getElementById("sound");
 
     if (audio) {
       audio.play().catch(() => {});
