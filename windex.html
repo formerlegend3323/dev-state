@@ -1,174 +1,124 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>BWODITOR WORKING FIX</title>
+<title>BWODITOR CLEAN</title>
 
 <style>
-html, body {
+html, body, canvas {
   margin: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
   background: black;
 }
+
+canvas {
+  display: block;
+}
 </style>
 </head>
 
 <body>
 
-<div id="loading_text"></div>
-<audio id="checkSound"></audio>
 <canvas id="canvas"></canvas>
 
 <script>
 
-(async function () {
-
 const BASE =
 "https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
 
-const WOLF =
+const DATA_WOLF =
 "https://unpkg.com/bwoditor-web@1.0.0/assets/public/Data.wolf";
 
 
 
 /*
-FIX NULL ERRORS
+CREATE EMSCRIPTEN MODULE
 */
 
 window.Module = {
-  canvas: document.getElementById("canvas")
-};
+
+  canvas: document.getElementById("canvas"),
+
+  locateFile(path) {
+
+    console.log("request:", path);
+
+    if (path.endsWith("Data.wolf")) {
+      return DATA_WOLF;
+    }
+
+    return BASE + path;
+  },
+
+  preRun: [async function() {
+
+    /*
+    CREATE GAME FOLDERS
+    */
+
+    try { FS.mkdir("/data0"); } catch(e) {}
+    try { FS.mkdir("/data0/woditor-test-GameCache"); } catch(e) {}
+    try { FS.mkdir("/data0/woditor-test-GameCache/Data"); } catch(e) {}
 
 
 
-/*
-REDIRECT DATA.WOLF
-*/
+    /*
+    DOWNLOAD REQUIRED FILES
+    */
 
-const oldFetch = window.fetch;
+    async function mount(name) {
 
-window.fetch = async function(resource, options) {
+      const url = BASE + name;
 
-  let url = resource;
+      console.log("downloading", url);
 
-  if (typeof resource !== "string") {
-    url = resource.url;
-  }
+      const data = await fetch(url)
+        .then(r => r.arrayBuffer());
 
-  if (url.includes("Data.wolf")) {
-    console.log("redirect fetch -> unpkg");
-    resource = WOLF;
-  }
+      FS.writeFile(
+        "/data0/woditor-test-GameCache/Data/" + name,
+        new Uint8Array(data)
+      );
 
-  return oldFetch(resource, options);
-};
+      console.log("mounted", name);
+    }
 
-
-
-/*
-REDIRECT XHR
-*/
-
-const oldOpen = XMLHttpRequest.prototype.open;
-
-XMLHttpRequest.prototype.open = function(method, url) {
-
-  if (url.includes("Data.wolf")) {
-
-    console.log("redirect xhr -> unpkg");
-
-    arguments[1] = WOLF;
-  }
-
-  return oldOpen.apply(this, arguments);
-};
+    await mount("Game.ini");
+    await mount("FontList.ini");
+    await mount("DefaultFont.ttf");
+    await mount("DefaultSubFont.ttf");
+    await mount("DefaultSoundFont.sf2");
+    await mount("InitialDownloadList.ini");
 
 
 
-/*
-EMSCRIPTEN FILE LOADER
-*/
+    /*
+    MANUALLY DOWNLOAD DATA.WOLF
+    */
 
-Module.locateFile = function(path) {
+    console.log("downloading Data.wolf");
 
-  if (path.endsWith("Data.wolf")) {
-    return WOLF;
-  }
-
-  return BASE + path;
-};
-
-
-
-/*
-PRELOAD FILES
-*/
-
-Module.preRun = Module.preRun || [];
-
-Module.preRun.push(async function() {
-
-  try { FS.mkdir('/data0'); } catch(e) {}
-  try { FS.mkdir('/data0/woditor-test-GameCache'); } catch(e) {}
-  try { FS.mkdir('/data0/woditor-test-GameCache/Data'); } catch(e) {}
-
-  async function putFile(name) {
-
-    const data = await fetch(BASE + name)
+    const wolfData = await fetch(DATA_WOLF)
       .then(r => r.arrayBuffer());
 
     FS.writeFile(
-      "/data0/woditor-test-GameCache/Data/" + name,
-      new Uint8Array(data)
+      "/data0/woditor-test-GameCache/Data/Data.wolf",
+      new Uint8Array(wolfData)
     );
 
-    console.log("mounted", name);
-  }
+    console.log("mounted Data.wolf");
 
-  await putFile("Game.ini");
-  await putFile("FontList.ini");
-  await putFile("DefaultFont.ttf");
-  await putFile("DefaultSubFont.ttf");
-  await putFile("DefaultSoundFont.sf2");
-  await putFile("InitialDownloadList.ini");
+  }]
 
-});
-
-
-
-/*
-LOAD ORIGINAL PAGE
-*/
-
-let html = await fetch(BASE + "index.html")
-  .then(r => r.text());
-
-html = html.replace(
-  /<script async type="text\/javascript" src="woditor\.js"><\/script>/i,
-  ""
-);
-
-document.open();
-document.write(html);
-document.close();
-
-
-
-/*
-LOAD ENGINE
-*/
-
-const script = document.createElement("script");
-
-script.src = BASE + "woditor.js";
-
-document.body.appendChild(script);
-
-})();
+};
 
 </script>
 
+<script src="https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/woditor.js"></script>
+
 </body>
 </html>
+```
