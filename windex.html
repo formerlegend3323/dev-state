@@ -34,6 +34,17 @@ body {
 
 <body>
 
+<audio
+id="sound"
+src="assets/sample.wav"
+preload="auto"
+hidden>
+</audio>
+
+<div id="error-log"></div>
+<div id="popup"></div>
+<div id="bwoditorerror"></div>
+
 <p id="title"></p>
 
 <div id="memory-usage"></div>
@@ -82,7 +93,17 @@ locateFile(path) {
   }
 
   return BASE + path;
-}
+},
+
+preRun: [function() {
+
+  try { FS.mkdir("/data0"); } catch(e) {}
+
+  try { FS.mkdir("/data0/woditor-test-GameCache"); } catch(e) {}
+
+  try { FS.mkdir("/data0/woditor-test-GameCache/Data"); } catch(e) {}
+
+}]
 
 };
 
@@ -93,6 +114,12 @@ document.body.addEventListener("click", async () => {
     const ctx = new AudioContext();
 
     await ctx.resume();
+
+    const audio = document.getElementById("sound");
+
+    if (audio) {
+      audio.play().catch(() => {});
+    }
 
   } catch(e) {}
 
