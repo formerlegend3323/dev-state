@@ -1,9 +1,9 @@
-```html id="kg8q1n"
+```html
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>BWODITOR ACTUAL FIX</title>
+<title>BWODITOR FINAL REAL FIX</title>
 
 <style>
 html, body {
@@ -25,6 +25,9 @@ html, body {
 const BASE =
 "https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
 
+const WOLF =
+"https://unpkg.com/bwoditor-web@1.0.0/assets/public/Data.wolf";
+
 let html =
   await fetch(BASE + "index.html")
     .then(r => r.text());
@@ -44,6 +47,11 @@ html = html.replace(
 window.Module = window.Module || {};
 
 Module.locateFile = function(path) {
+
+  if (path.endsWith("Data.wolf")) {
+    return "${WOLF}";
+  }
+
   return "${BASE}" + path;
 };
 
