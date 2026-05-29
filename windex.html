@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>BWODITOR FINAL</title>
+<title>BWODITOR FINAL FIX</title>
 
 <style>
 html, body {
@@ -20,7 +20,7 @@ html, body {
 
 <script>
 
-(async () => {
+(async function () {
 
 const BASE =
 "https://cdn.jsdelivr.net/gh/formerlegend3323/dev-state@main/assets/public/";
@@ -28,9 +28,8 @@ const BASE =
 const WOLF =
 "https://unpkg.com/bwoditor-web@1.0.0/assets/public/Data.wolf";
 
-let html =
-  await fetch(BASE + "index.html")
-    .then(r => r.text());
+let html = await fetch(BASE + "index.html")
+  .then(r => r.text());
 
 html = html.replace(
   /<head>/i,
@@ -38,59 +37,56 @@ html = html.replace(
 );
 
 html = html.replace(
-  /<script async type="text\/javascript" src="woditor\.js"><\/script>/,
-`
-<script>
+  /<script async type="text\/javascript" src="woditor\.js"><\/script>/i,
 
-window.Module = window.Module || {};
+'<script>' +
 
-Module.locateFile = function(path) {
+'window.Module = window.Module || {};' +
 
-  if (path.endsWith("Data.wolf")) {
-    return "${WOLF}";
-  }
+'Module.locateFile = function(path) {' +
 
-  return "${BASE}" + path;
-};
+'if (path.endsWith("Data.wolf")) {' +
+'return "' + WOLF + '";' +
+'}' +
 
-Module.preRun = Module.preRun || [];
+'return "' + BASE + '" + path;' +
 
-Module.preRun.push(async function() {
+'};' +
 
-  try { FS.mkdir('/data0'); } catch(e) {}
-  try { FS.mkdir('/data0/woditor-test-GameCache'); } catch(e) {}
-  try { FS.mkdir('/data0/woditor-test-GameCache/Data'); } catch(e) {}
+'Module.preRun = Module.preRun || [];' +
 
-  async function putFile(name) {
+'Module.preRun.push(async function() {' +
 
-    const url = "${BASE}" + name;
+'try { FS.mkdir("/data0"); } catch(e) {}' +
+'try { FS.mkdir("/data0/woditor-test-GameCache"); } catch(e) {}' +
+'try { FS.mkdir("/data0/woditor-test-GameCache/Data"); } catch(e) {}' +
 
-    const data =
-      await fetch(url)
-      .then(r => r.arrayBuffer());
+'async function putFile(name) {' +
 
-    FS.writeFile(
-      "/data0/woditor-test-GameCache/Data/" + name,
-      new Uint8Array(data)
-    );
+'const data = await fetch("' + BASE + '" + name)' +
+'.then(r => r.arrayBuffer());' +
 
-    console.log("mounted", name);
+'FS.writeFile(' +
+'"/data0/woditor-test-GameCache/Data/" + name,' +
+'new Uint8Array(data)' +
+');' +
 
-  }
+'console.log("mounted", name);' +
 
-  await putFile("Game.ini");
-  await putFile("FontList.ini");
-  await putFile("DefaultFont.ttf");
-  await putFile("DefaultSubFont.ttf");
-  await putFile("DefaultSoundFont.sf2");
-  await putFile("InitialDownloadList.ini");
+'}' +
 
-});
+'await putFile("Game.ini");' +
+'await putFile("FontList.ini");' +
+'await putFile("DefaultFont.ttf");' +
+'await putFile("DefaultSubFont.ttf");' +
+'await putFile("DefaultSoundFont.sf2");' +
+'await putFile("InitialDownloadList.ini");' +
 
-<\/script>
+'});' +
 
-<script async type="text/javascript" src="${BASE}woditor.js"><\/script>
-`
+'<\/script>' +
+
+'<script async type="text/javascript" src="' + BASE + 'woditor.js"><\/script>'
 );
 
 document.open();
